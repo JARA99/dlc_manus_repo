@@ -73,7 +73,7 @@ The Cemaco scraper has been successfully integrated and is now fully operational
 git clone https://github.com/JARA99/dlc_manus_repo.git
 cd dlc_manus_repo/backend
 
-# Install dependencies
+# Install dependencies (Poetry will automatically handle the project structure)
 poetry install
 
 # Set up environment
@@ -86,6 +86,8 @@ poetry run alembic upgrade head
 # Start the server
 poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
+
+**Note:** The project uses `package-mode = false` in `pyproject.toml` for dependency management only, which is perfect for application deployment without package installation.
 
 ### **Environment Configuration**
 ```env
