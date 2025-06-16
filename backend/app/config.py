@@ -13,7 +13,10 @@ class Settings(BaseSettings):
     # Redis Configuration
     redis_url: str = "redis://localhost:6379/0"
     
-    # API Configuration
+    # Application Configuration
+    environment: str = "development"
+    api_v1_str: str = "/api/v1"
+    project_name: str = "dondelocompro.gt Backend"
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     debug: bool = True
@@ -30,10 +33,21 @@ class Settings(BaseSettings):
     
     # Scraping Configuration
     scraping_delay: float = 1.0
+    scraping_delay_min: int = 1
+    scraping_delay_max: int = 3
+    scraping_timeout: int = 30
+    scraping_retries: int = 3
     max_concurrent_scrapers: int = 5
     user_agent: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     request_timeout: int = 30
     max_retries: int = 3
+    
+    # Logging Configuration
+    log_level: str = "INFO"
+    log_format: str = "detailed"
+    
+    # WebSocket Configuration
+    websocket_timeout: int = 300
     
     # Celery Configuration
     celery_broker_url: str = "redis://localhost:6379/0"
@@ -41,12 +55,15 @@ class Settings(BaseSettings):
     
     # Search Configuration
     default_search_timeout: int = 30
-    max_search_results: int = 100
+    search_timeout: int = 60
+    max_search_results: int = 50
     default_search_results: int = 50
     
     # Rate Limiting
     rate_limit_search: str = "10/minute"
     rate_limit_results: str = "60/minute"
+    rate_limit_requests: int = 100
+    rate_limit_window: int = 60
     max_websocket_connections: int = 5
     
     class Config:
