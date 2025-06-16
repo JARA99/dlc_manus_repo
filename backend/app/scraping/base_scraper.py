@@ -83,10 +83,23 @@ class BaseScraper(ABC):
             'Upgrade-Insecure-Requests': '1',
         }
         
+        # Override session initialization for Cemaco
+        timeout = aiohttp.ClientTimeout(total=30, connect=10)
+        connector = aiohttp.TCPConnector(ssl=False, limit=10)
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+        }
+        
         self.session = aiohttp.ClientSession(
             timeout=timeout,
             headers=headers,
-            connector=aiohttp.TCPConnector(limit=10)
+            connector=connector
         )
     
     async def close_session(self):
@@ -171,21 +184,26 @@ class BaseScraper(ABC):
         
         return query
     
-    async def make_request(self, url: str, **kwargs) -> aiohttp.ClientResponse:
+    async def make_request(self, url: str, headers: dict = None, **kwargs) -> aiohttp.ClientResponse:
         """Make HTTP request with retry logic and rate limiting."""
         if not self.session:
             await self.init_session()
         
+        # Merge provided headers with session headers
+        request_headers = {}
+        if headers:
+            request_headers.update(headers)
+        
         # Apply rate limiting
-        delay = self.config.get('delay', settings.scraping_delay)
+        delay = self.config.get('delay', 1.0)
         await asyncio.sleep(delay + random.uniform(0, 0.5))
         
         # Retry logic
-        max_retries = settings.max_retries
+        max_retries = self.config.get('max_retries', 3)
         for attempt in range(max_retries + 1):
             try:
-                async with self.session.get(url, **kwargs) as response:
-                    if response.status == 200:
+                async with self.session.get(url, headers=request_headers, **kwargs) as response:
+                    if response.status in [200, 206]:  # Accept both 200 and 206 (partial content)
                         return response
                     elif response.status == 429:  # Rate limited
                         wait_time = 2 ** attempt
