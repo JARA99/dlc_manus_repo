@@ -29,7 +29,7 @@ async def test_api():
         
         # Start search
         print("\n2. Starting search...")
-        search_data = {"query": "iPhone", "max_results": 3}
+        search_data = {"query": "iPhone", "max_results": 10}
         
         async with session.post(
             f"{base_url}/search",

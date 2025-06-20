@@ -200,7 +200,7 @@ async def execute_search(search_id: str, search_request: SearchRequest):
             scraper = scraper_class()
             add_search_event(search_id, "vendor_started", {
                 "vendor_id": vendor_id,
-                "vendor_name": scraper.vendor_name
+                "vendor_name": scraper.vendor.name
             })
             
             # Execute scraper
