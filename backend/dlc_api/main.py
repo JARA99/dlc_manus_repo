@@ -6,7 +6,7 @@ import asyncio
 import uuid
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List
 from contextlib import asynccontextmanager
 
@@ -69,7 +69,7 @@ async def health():
     """Health check endpoint."""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow(),
+        "timestamp": datetime.now(timezone.utc),
         "scrapers": list(SCRAPERS.keys())
     }
 
@@ -84,7 +84,7 @@ async def start_search(search_request: SearchRequest, request: Request):
         "query": search_request.query,
         "max_results": search_request.max_results,
         "status": "initiated",
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     }
     
     # Start background search task
@@ -247,7 +247,7 @@ def add_search_event(search_id: str, event_type: str, data: dict):
         events.append({
             "event": event_type,
             "data": data,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
 
 

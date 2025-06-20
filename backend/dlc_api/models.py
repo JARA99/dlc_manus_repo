@@ -1,6 +1,19 @@
 from typing import List, Optional
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, Field
+from datetime import datetime, timezone
+
+
+class Vendor(BaseModel):
+    """Vendor/Store information."""
+    id: str = Field(..., description="Unique vendor identifier")
+    name: str = Field(..., description="Display name of the vendor")
+    base_url: str = Field(..., description="Base URL of the vendor website")
+    country: str = Field(default="GT", description="Country code")
+    currency: str = Field(default="GTQ", description="Default currency")
+    active: bool = Field(default=True, description="Whether vendor is active")
+    # Future fields for shipping costs, etc.
+    # shipping_cost: Optional[float] = None
+    # free_shipping_threshold: Optional[float] = None
 
 
 class Product(BaseModel):
@@ -33,7 +46,7 @@ class SearchEvent(BaseModel):
     """Server-Sent Event for search updates."""
     event: str  # "started", "product_found", "vendor_completed", "completed", "error"
     data: dict
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ScrapingResult(BaseModel):

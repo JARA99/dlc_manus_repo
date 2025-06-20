@@ -8,16 +8,15 @@ import time
 from typing import List
 from bs4 import BeautifulSoup
 from ..models import Product, ScrapingResult
+from ..vendors import get_vendor
 
 
 class CemacoScraper:
     """Scraper for Cemaco.com (VTEX platform)."""
     
     def __init__(self):
-        self.vendor_id = "cemaco"
-        self.vendor_name = "Cemaco"
-        self.base_url = "https://www.cemaco.com"
-        self.api_url = "https://www.cemaco.com/api/catalog_system/pub/products/search"
+        self.vendor = get_vendor("cemaco")
+        self.api_url = f"{self.vendor.base_url}/api/catalog_system/pub/products/search"
     
     async def search(self, query: str, max_results: int = 10) -> ScrapingResult:
         """Search for products on Cemaco."""
@@ -44,8 +43,8 @@ class CemacoScraper:
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                     "Accept": "application/json, text/plain, */*",
                     "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-                    "Referer": "https://www.cemaco.com/",
-                    "Origin": "https://www.cemaco.com"
+                    "Referer": f"{self.vendor.base_url}/",
+                    "Origin": self.vendor.base_url
                 }
                 
                 async with session.get(
@@ -62,8 +61,8 @@ class CemacoScraper:
                         duration = time.time() - start_time
                         
                         return ScrapingResult(
-                            vendor_id=self.vendor_id,
-                            vendor_name=self.vendor_name,
+                            vendor_id=self.vendor.id,
+                            vendor_name=self.vendor.name,
                             success=True,
                             products=products,
                             duration=duration
@@ -103,7 +102,7 @@ class CemacoScraper:
                 
                 # Get product URL
                 link_text = item.get("linkText", "")
-                product_url = f"{self.base_url}/{link_text}/p" if link_text else ""
+                product_url = f"{self.vendor.base_url}/{link_text}/p" if link_text else ""
                 
                 # Get image URL
                 image_url = None
@@ -119,9 +118,9 @@ class CemacoScraper:
                 product = Product(
                     name=product_name,
                     price=price,
-                    currency="GTQ",
-                    vendor_id=self.vendor_id,
-                    vendor_name=self.vendor_name,
+                    currency=self.vendor.currency,
+                    vendor_id=self.vendor.id,
+                    vendor_name=self.vendor.name,
                     url=product_url,
                     image_url=image_url,
                     availability=availability,
@@ -140,8 +139,8 @@ class CemacoScraper:
         """Create error result."""
         duration = time.time() - start_time
         return ScrapingResult(
-            vendor_id=self.vendor_id,
-            vendor_name=self.vendor_name,
+            vendor_id=self.vendor.id,
+            vendor_name=self.vendor.name,
             success=False,
             products=[],
             error_message=error_message,
