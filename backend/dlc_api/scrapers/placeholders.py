@@ -5,15 +5,22 @@ Placeholder scrapers for future implementation
 import asyncio
 import time
 from typing import List
-from ..models import Product, ScrapingResult
-from ..vendors import get_vendor
+from ..models import Vendor, Product, ScrapingResult
+from .base import BaseScraper
 
 
-class MaxScraper:
+class MaxScraper(BaseScraper):
     """Placeholder scraper for Max."""
     
-    def __init__(self):
-        self.vendor = get_vendor("max")
+    # Vendor information defined at class level
+    VENDOR_INFO = Vendor(
+        id="max",
+        name="Max",
+        base_url="https://www.max.com.gt",
+        country="GT", 
+        currency="GTQ",
+        active=True
+    )
     
     async def search(self, query: str, max_results: int = 10) -> ScrapingResult:
         """Placeholder search - returns empty results."""
@@ -28,11 +35,18 @@ class MaxScraper:
         )
 
 
-class ElektraScraper:
+class ElektraScraper(BaseScraper):
     """Placeholder scraper for Elektra."""
     
-    def __init__(self):
-        self.vendor = get_vendor("elektra")
+    # Vendor information defined at class level
+    VENDOR_INFO = Vendor(
+        id="elektra",
+        name="Elektra",
+        base_url="https://www.elektra.com.gt",
+        country="GT",
+        currency="GTQ", 
+        active=True
+    )
     
     async def search(self, query: str, max_results: int = 10) -> ScrapingResult:
         """Placeholder search - returns empty results."""
@@ -47,11 +61,18 @@ class ElektraScraper:
         )
 
 
-class WalmartScraper:
+class WalmartScraper(BaseScraper):
     """Placeholder scraper for Walmart."""
     
-    def __init__(self):
-        self.vendor = get_vendor("walmart")
+    # Vendor information defined at class level
+    VENDOR_INFO = Vendor(
+        id="walmart",
+        name="Walmart Guatemala",
+        base_url="https://www.walmart.com.gt",
+        country="GT",
+        currency="GTQ",
+        active=True
+    )
     
     async def search(self, query: str, max_results: int = 10) -> ScrapingResult:
         """Placeholder search - returns empty results."""

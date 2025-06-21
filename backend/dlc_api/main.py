@@ -16,7 +16,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from .models import SearchRequest, SearchResponse, SearchEvent, ScrapingResult
-from .scrapers import SCRAPERS
+from .scrapers import SCRAPERS, get_scraper_registry
+
+# Get the global registry
+_registry = get_scraper_registry()
 
 
 # Load environment variables
@@ -197,7 +200,7 @@ async def execute_search(search_id: str, search_request: SearchRequest):
         
         for vendor_id, scraper_class in SCRAPERS.items():
             # Send vendor started event
-            scraper = scraper_class()
+            scraper = _registry.get_scraper(vendor_id)  # Use registry to get singleton
             add_search_event(search_id, "vendor_started", {
                 "vendor_id": vendor_id,
                 "vendor_name": scraper.vendor.name

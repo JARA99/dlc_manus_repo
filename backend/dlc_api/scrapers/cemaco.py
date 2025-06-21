@@ -7,15 +7,25 @@ import aiohttp
 import time
 from typing import List
 from bs4 import BeautifulSoup
-from ..models import Product, ScrapingResult
-from ..vendors import get_vendor
+from ..models import Vendor, Product, ScrapingResult
+from .base import BaseScraper
 
 
-class CemacoScraper:
+class CemacoScraper(BaseScraper):
     """Scraper for Cemaco.com (VTEX platform)."""
     
+    # Vendor information defined at class level
+    VENDOR_INFO = Vendor(
+        id="cemaco",
+        name="Cemaco",
+        base_url="https://www.cemaco.com",
+        country="GT",
+        currency="GTQ",
+        active=True
+    )
+    
     def __init__(self):
-        self.vendor = get_vendor("cemaco")
+        super().__init__()  # Initializes self.vendor from VENDOR_INFO
         self.api_url = f"{self.vendor.base_url}/api/catalog_system/pub/products/search"
     
     async def search(self, query: str, max_results: int = 10) -> ScrapingResult:
